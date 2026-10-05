@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 只申请 INTERNET：数据全在应用私有目录（卸载即清），导出的文件走 getExternalFilesDir，
+         不需要任何存储权限。后台自动同步要的工作权限等那一版再做时再申请。 -->
+
+    <application
+        android:label="全面战场分析"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 登录窗口：独立 Activity，好让 QQ / 微信 的授权跳转能正常把它换到前台再换回来。
+             singleTop 是为了连点两下"打开登录窗口"不叠两层：前面那扇关掉的瞬间会推一条
+             login:window-closed，把还留在屏幕上的那一扇的轮询给停掉（人在里面登录成功软件也不认）。
+             新意图落到同一实例，由 LoginActivity.onNewIntent 再清一遍会话、重新加载，
+             仍然守住「每一窗都是全新会话」这条裁定。 -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode" />
+    </application>
+</manifest>

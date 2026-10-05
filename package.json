@@ -1,0 +1,16 @@
+{
+  "name": "df-swtwr",
+  "version": "1.9.1",
+  "description": "三角洲行动 · 全面战场本地深度数据分析（胜者为王 / 指挥官 / 攻防，支持多账号）",
+  "author": "df-swtwr",
+  "main": "shell/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/core.test.js && node test/plugin-bridge.test.js && node test/team-stats-plugin.test.js && node test/ai-plugin.test.js && node test/isolation.test.js && node test/map-names.test.js && node test/update.test.js && node test/android-shim.test.js",
+    "test:no-plugins": "node test/core.test.js && node test/plugin-bridge.test.js && node test/map-names.test.js && node test/update.test.js",
+    "dev:ui": "node test/preview-server.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

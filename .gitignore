@@ -1,0 +1,35 @@
+# 构建产物 / 交付包（体积大，且 dist 里跑起来会生成运行时数据）
+dist/
+dist-android/
+release/
+build.log
+node_modules/
+
+# 插件：源码与打包产物都不进这个仓库（只发用户自己导入）
+plugins-src/
+plugins-dist/
+
+# 安卓：只留源码。build/ 与本机 SDK 路径是机器相关的生成物
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/*.iml
+*.apk
+*.aab
+# assets 由 node tools/build-android-assets.js 从 core/ + ui/ + android/js 生成，不手工维护
+android/app/src/main/assets/app/
+
+# 服务端整体不上公开仓库（在线更新查询 / 发布页 / 后台 / schema / 部署说明都在作者自己手里）。
+# 就算哪天要放开，这两份凭证文件也永远不进仓库、不进分享包：
+server/
+server/db.local.php
+server/publish.secret.php
+
+# 作者的本机工作文档（交接手册 / 插件开发指南），不随源码公开
+项目交接手册.md
+插件开发指南.md
+
+# 杂项
+.DS_Store
+Thumbs.db

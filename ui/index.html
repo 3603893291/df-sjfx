@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>全面战场数据分析</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ============ 登录视图 ============ -->
+<div id="loginView" class="login-view">
+  <div class="login-card">
+    <div class="app-mark">Δ</div>
+    <h1>全面战场数据分析</h1>
+    <p class="login-sub">用你的 WeGame 账号登录后开始分析<br><span class="dim">全模式采集 · 胜者为王可单独筛选</span></p>
+
+    <div id="loginStatus" class="login-status">正在检查登录状态…</div>
+
+    <button id="btnOpenLogin" class="btn btn-primary btn-lg">打开登录窗口</button>
+    <button id="btnRecheck" class="btn btn-lg">我已登录，重新检查</button>
+    <button id="btnSkipLogin" class="btn btn-lg hidden">跳过，直接看本机数据</button>
+    <p id="skipHint" class="login-hint hidden">本机已存有战绩数据，可以离线查看全部分析页面；同步需要登录成功后再进行。</p>
+
+    <div class="login-foot">
+      <p>数据只保存在本机，不会上传任何服务器</p>
+      <p>不记录账号密码，登录凭据始终留在本软件的浏览器会话内</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 主界面 ============ -->
+<div id="appView" class="app-view hidden">
+  <aside class="sidebar">
+    <div class="account-bar">
+      <select class="input sm account-switch" id="accountSwitch" title="切换账号">
+        <option value="">未选择账号</option>
+      </select>
+      <button class="btn sm" id="btnAddAccount" title="添加账号">＋</button>
+    </div>
+    <div class="profile">
+      <div class="avatar" id="avatar">—</div>
+      <div class="profile-meta">
+        <div class="profile-name" id="profileName">未同步</div>
+        <div class="profile-sub" id="profileSub">—</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-view="overview">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1.4"/><rect x="9" y="2" width="5" height="5" rx="1.4"/><rect x="2" y="9" width="5" height="5" rx="1.4"/><rect x="9" y="9" width="5" height="5" rx="1.4"/></svg>
+        总览</button>
+      <button class="nav-item" data-view="winrate">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13V9"/><path d="M6 13V6"/><path d="M10 13V8"/><path d="M14 13V3"/><path d="M1.5 13h13"/></svg>
+        胜率</button>
+      <button class="nav-item" data-view="matches">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 4h8.5"/><path d="M5.5 8h8.5"/><path d="M5.5 12h8.5"/><circle cx="2.6" cy="4" r="0.9" fill="currentColor" stroke="none"/><circle cx="2.6" cy="8" r="0.9" fill="currentColor" stroke="none"/><circle cx="2.6" cy="12" r="0.9" fill="currentColor" stroke="none"/></svg>
+        战局</button>
+      <button class="nav-item" data-view="detail">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.8H4.5a1.3 1.3 0 0 0-1.3 1.3v9.8a1.3 1.3 0 0 0 1.3 1.3h7a1.3 1.3 0 0 0 1.3-1.3V5.8z"/><path d="M9 1.8v4h4"/><path d="M5.8 9h4.4"/><path d="M5.8 11.4h3"/></svg>
+        单场详情</button>
+      <button class="nav-item" data-view="maps">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M1.8 3.8 6 2.2l4 1.6 4.2-1.6v9.4L10 13.2l-4-1.6-4.2 1.6z"/><path d="M6 2.2v9.4"/><path d="M10 3.8v9.4"/></svg>
+        地图分析</button>
+      <button class="nav-item" data-view="classes">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="2.6"/><path d="M2.9 13.4a5.1 5.1 0 0 1 10.2 0"/></svg>
+        兵种表现</button>
+      <button class="nav-item" data-view="encounters">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.6" cy="5.4" r="2.2"/><path d="M1.4 13.2a4.4 4.4 0 0 1 8.4 0"/><circle cx="11.4" cy="6.2" r="1.8"/><path d="M9.6 13.2a3.6 3.6 0 0 1 5.6-2.6"/></svg>
+        对手队友</button>
+      <button class="nav-item" data-view="rhythm">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.5 1.7"/></svg>
+        状态与节律</button>
+      <button class="nav-item" data-view="sandbox">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 4.2 6 2.6l4 1.6 4.2-1.6v7.6L10 13.4l-4-1.6-4.2 1.6z"/><path d="M6 2.6v9.2"/><path d="M10 4.2v7.6"/><circle cx="8" cy="7" r="1.1" fill="currentColor" stroke="none"/></svg>
+        地图沙盘</button>
+      <button class="nav-item" data-view="plugin" id="navPlugin" style="display:none">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 2.4h2.8v2.1h2.1v2.8h-2.1v2.1H9.4V7.3H6.6V5.2h2.1V2.4z" transform="translate(-1.2 1.2)"/><rect x="2.2" y="9.4" width="4.4" height="4.4" rx="1.2"/><path d="M11.4 2.2v4.4M9.2 4.4h4.4"/></svg>
+        扩展页面</button>
+      <button class="nav-item" data-view="settings">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.6v1.6M8 12.8v1.6M14.4 8h-1.6M3.2 8H1.6M12.5 3.5l-1.1 1.1M4.6 11.4l-1.1 1.1M12.5 12.5l-1.1-1.1M4.6 4.6 3.5 3.5"/></svg>
+        设置</button>
+      <button class="nav-item" data-view="about">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4"/><circle cx="8" cy="4.9" r="0.9" fill="currentColor" stroke="none"/></svg>
+        关于</button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="sync-state" id="syncState">尚未同步</div>
+      <div class="sync-bar" id="syncBar" style="display:none"><i id="syncFill"></i></div>
+      <div class="sync-count" id="syncCount" style="display:none"></div>
+      <button id="btnSync" class="btn btn-primary btn-block">立即同步</button>
+    </div>
+  </aside>
+
+  <!-- 竖屏抽屉打开时的遮罩：点它就收回去。宽屏下 CSS 让它不显示 -->
+  <div class="nav-scrim" id="navScrim"></div>
+
+  <div class="main-col">
+    <!-- 离线模式横幅：登录检查失败/超时但用户选择先看本机数据时由 app.js 显示 -->
+    <div class="offline-bar hidden" id="offlineBar">
+      <span class="offline-text" id="offlineText">离线模式 · 仅本机已有数据 · 未同步新场次</span>
+      <span class="fb-spacer"></span>
+      <button class="btn btn-sm" id="btnOfflineRetry">重试登录并同步</button>
+      <button class="btn btn-sm" id="btnOfflineLogin">打开登录窗口</button>
+    </div>
+
+    <!-- 全局筛选栏：作用于所有页面 -->
+    <div class="filterbar">
+      <!-- 只在竖屏/窄屏出现的抽屉开关：宽屏下 CSS 把它藏掉，桌面端一行代码都不用改行为 -->
+      <button class="nav-drawer-btn" id="btnNavDrawer" type="button" aria-label="打开导航">☰</button>
+      <div class="fb-group">
+        <span class="fb-label">模式</span>
+        <div class="segmented sm" id="fMode">
+          <button class="seg active" data-mode="all">全部</button>
+          <button class="seg" data-mode="swtwr">胜者为王</button>
+          <button class="seg" data-mode="commander">指挥官</button>
+          <button class="seg" data-mode="other">其他</button>
+        </div>
+      </div>
+      <div class="fb-group">
+        <!-- 「对局」是与「模式」正交的第二根轴：模式是官方给的分类，这一根是人自己认的（软件识别不了比赛局，
+             真库量过：能分开的只有当晚轮到的地图 id，那是巧合）。core 里两轴各筛各的，可以叠着看
+             （例如「指挥官 + 比赛」），只是**排版上共用模式那一排**：竖屏的硬预算是 ≤3 行 / ≤19% 视口高
+             （探针钉死），另起一排就超出那 3px，等于把当年「筛选栏吃掉三分之一屏」那条投诉请回来。
+             代价如实写在这儿：这一对没有自己的标题，也没有「全部」那颗 ——
+             两颗都不亮就是全部，当前范围由顶上那句「筛选后 N 场 · 当前对局范围：…」念出来。 -->
+        <div class="segmented sm kind-seg" id="fKind">
+          <button class="seg" data-kind="comp" title="只统计你在单场详情里标为「比赛」的那些局；再点一次回到全部">比赛</button>
+          <button class="seg" data-kind="practice" title="只统计没标为比赛的局；再点一次回到全部">匹配</button>
+        </div>
+      </div>
+      <div class="fb-group">
+        <span class="fb-label">中途退出</span>
+        <div class="segmented sm" id="fLeave">
+          <button class="seg active" data-leave="all">全部</button>
+          <button class="seg" data-leave="exclude">排除退出</button>
+          <button class="seg" data-leave="only">仅退出</button>
+        </div>
+      </div>
+      <div class="fb-group">
+        <span class="fb-label">时间</span>
+        <select class="input sm" id="fSince">
+          <option value="0">全部时间</option>
+          <option value="1">近 1 天</option>
+          <option value="7">近 7 天</option>
+          <option value="30">近 30 天</option>
+          <option value="90">近 90 天</option>
+        </select>
+      </div>
+      <div class="fb-spacer"></div>
+      <div class="fb-count" id="filterCount">—</div>
+    </div>
+
+    <main class="content">
+      <!-- 总览 -->
+      <section class="view active" id="view-overview">
+        <header class="view-head">
+          <h2>总览</h2>
+          <span class="view-sub" id="overviewSub"></span>
+        </header>
+        <div id="kpis"></div>
+        <div class="insights" id="insights"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>得分趋势</h3><div class="chart" id="chScore"></div></div>
+          <div class="panel"><h3>KD 走势</h3><div class="chart" id="chKd"></div></div>
+          <div class="panel"><h3>每日场次与胜率</h3><div class="chart" id="chDay"></div></div>
+          <div class="panel"><h3>地图胜率</h3><div class="chart" id="chMap"></div></div>
+        </div>
+        <div class="panel" id="seasonPanel"></div>
+      </section>
+
+      <!-- 胜率 -->
+      <section class="view" id="view-winrate">
+        <header class="view-head">
+          <h2>胜率</h2>
+          <span class="view-sub" id="rateRule">评分体系：得分 35% · 击杀 20% · KDA 25% · 占点（次） 10% · 救治 10%</span>
+        </header>
+        <div id="rateKpis"></div>
+        <div class="panel" id="periodBox"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>单局评分曲线</h3><div class="chart" id="chRating"></div></div>
+          <div class="panel"><h3>滚动 10 局平均评分</h3><div class="chart" id="chRatingRoll"></div></div>
+          <div class="panel"><h3>滚动 10 局胜率</h3><div class="chart" id="chWinRoll"></div></div>
+          <div class="panel"><h3>评分分布</h3><div class="chart" id="chRatingDist"></div></div>
+        </div>
+        <div class="panel" id="rateTable"></div>
+        <!-- ① 赢输对照 与 ⑧ 得分结构反推：内容全部由 views.js 现算，这里只是容器 -->
+        <div class="panel" id="winLossPanel"></div>
+        <div class="panel" id="structurePanel"></div>
+      </section>
+
+      <!-- 战局 -->
+      <section class="view" id="view-matches">
+        <header class="view-head">
+          <h2>战局</h2>
+          <span class="view-sub" id="matchSub">点任意一行查看该场全场数据</span>
+          <input class="input" type="text" id="fMapKw" placeholder="按地图名筛选…" style="margin-left:auto;width:200px">
+        </header>
+        <div class="match-tools">
+          <span class="fb-label">本页筛选</span>
+          <div class="segmented sm" id="fCls">
+            <button class="seg active" data-cls="all">全兵种</button>
+            <button class="seg" data-cls="1">突击</button>
+            <button class="seg" data-cls="2">医疗</button>
+            <button class="seg" data-cls="3">工程</button>
+            <button class="seg" data-cls="4">侦查</button>
+            <button class="seg" data-cls="5">指挥官</button>
+          </div>
+          <div class="segmented sm" id="fRes">
+            <button class="seg active" data-res="all">全部</button>
+            <button class="seg" data-res="win">只胜</button>
+            <button class="seg" data-res="lose">只负</button>
+          </div>
+          <select class="input sm" id="fRate">
+            <option value="">全部评分</option>
+            <option value="90">评分 ≥ 90</option>
+            <option value="75">评分 75-89</option>
+            <option value="60">评分 60-74</option>
+            <option value="40">评分 40-59</option>
+            <option value="0">评分 &lt; 40</option>
+          </select>
+          <label class="mt-sw"><input type="checkbox" id="fRoster">只看有全场名单</label>
+          <label class="mt-sw"><input type="checkbox" id="fWatch">含关注玩家</label>
+          <button class="btn btn-sm" id="btnClearMt">清除</button>
+          <span class="dim mt-note">只筛这张表，不影响任何统计口径</span>
+          <span class="fb-spacer"></span>
+          <span class="fb-count" id="matchCount"></span>
+        </div>
+        <div class="panel table-wrap" id="matchTable"></div>
+      </section>
+
+      <!-- 单场详情 -->
+      <section class="view" id="view-detail">
+        <header class="view-head">
+          <h2>单场详情</h2>
+          <select class="input" id="roomPick"></select>
+          <button class="btn" id="btnCard" style="margin-left:auto">生成战绩卡片</button>
+        </header>
+        <div id="detailBox"></div>
+      </section>
+
+      <!-- 地图分析 -->
+      <section class="view" id="view-maps">
+        <header class="view-head">
+          <h2>地图分析</h2>
+          <span class="view-sub">全部由本软件采集的对局自行统计，不使用官方统计口径</span>
+        </header>
+        <div class="panel" id="mapTips"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>各图胜率</h3><div class="chart" id="chMapRate"></div></div>
+          <div class="panel"><h3>各图平均评分</h3><div class="chart" id="chMapRating"></div></div>
+        </div>
+        <div class="panel" id="mapBox"></div>
+        <div class="panel" id="matrixBox"></div>
+      </section>
+
+      <!-- 兵种表现 -->
+      <section class="view" id="view-classes">
+        <header class="view-head">
+          <h2>兵种表现</h2>
+          <span class="view-sub">按当局使用的干员 / 兵种统计胜率与评分</span>
+        </header>
+        <div class="panel" id="classTips"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>各兵种胜率</h3><div class="chart" id="chClassRate"></div></div>
+          <div class="panel"><h3>各兵种平均评分</h3><div class="chart" id="chClassRating"></div></div>
+        </div>
+        <div class="panel" id="classBox"></div>
+        <div class="panel" id="commanderBox"></div>
+      </section>
+
+      <!-- 对手与队友 -->
+      <section class="view" id="view-encounters">
+        <header class="view-head">
+          <h2>对手与队友</h2>
+          <span class="view-sub">基于官方对局详情接口的完整名单，识别常遇的同阵营玩家与对手 · 点任意一行查看交手档案</span>
+        </header>
+        <div class="panel" id="encTips"></div>
+        <div class="panel" id="strengthPanel"></div>
+        <div class="panel" id="encDetail" style="display:none"></div>
+        <div class="split">
+          <div class="panel">
+            <h3>重复遇到 <span class="dim" style="font-weight:400;font-size:12px">同场 ≥2 次，唯一有统计价值的部分</span></h3>
+            <div id="encMates"></div>
+          </div>
+          <div class="panel">
+            <h3>对手倾向最强 <span class="dim" style="font-weight:400;font-size:12px">同阵营率最低</span></h3>
+            <div id="encOpps"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>最近同场 <span class="dim" style="font-weight:400;font-size:12px">点任意一行看他在那一场排第几</span></h3>
+          <div id="encRecent"></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>同阵营时胜率最高</h3>
+            <div id="encBestMates"></div>
+          </div>
+          <div class="panel">
+            <h3>最难缠对手</h3>
+            <div id="encToughest"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 状态与节律：数据完整度 / 分时段 / 连战衰减 / 关注池 -->
+      <section class="view" id="view-rhythm">
+        <header class="view-head">
+          <h2>状态与节律</h2>
+          <span class="view-sub">你几点状态最好、连打到第几场开始掉，以及本机战绩数据的完整度</span>
+        </header>
+        <div class="panel" id="syncPanel"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>分时段场均得分</h3><div class="chart" id="chHour"></div></div>
+          <div class="panel"><h3>分时段胜率</h3><div class="chart" id="chHourRate"></div></div>
+        </div>
+        <div class="panel">
+          <h3>连战衰减 <span class="dim" id="sessionHint" style="font-weight:400;font-size:12px"></span></h3>
+          <div class="chart" id="chSession"></div>
+          <div id="sessionTable"></div>
+        </div>
+        <div class="panel" id="durPanel"></div>
+        <div class="panel" id="peoplePanel"></div>
+        <div class="panel" id="hourTable"></div>
+      </section>
+
+      <!-- 设置 -->
+      <section class="view" id="view-settings">
+        <header class="view-head"><h2>设置</h2></header>
+
+        <div class="panel">
+          <h3>外观</h3>
+          <div class="row">
+            <span class="row-label">主题</span>
+            <div class="segmented" id="themeSeg">
+              <button data-theme="system" class="seg active">跟随系统</button>
+              <button data-theme="light" class="seg">浅色</button>
+              <button data-theme="dark" class="seg">深色</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>评分口径 <span class="dim" id="rateRulePreview" style="font-weight:400;font-size:12px"></span></h3>
+          <div class="w-sliders" id="wSliders"></div>
+          <p class="hint" id="occNote"></p>
+          <div class="row">
+            <button class="btn btn-sm" id="btnWeightReset">还原默认口径</button>
+            <span class="hint" id="weightHint" style="margin:0">五档之和不要求等于 100，软件按比例归一。</span>
+          </div>
+          <p class="hint">「单局评分」是本软件自己按同局 46~57 人的实际排名加权算出来的，不是官方口径。
+            拖动滑杆后所有页面的评分会按新权重重算；<b>之前导出的数据包保持原样</b>，
+            软件不做「按新口径回填历史」。</p>
+        </div>
+
+        <div class="panel">
+          <h3>同步</h3>
+          <div class="row">
+            <span class="row-label">定时自动同步</span>
+            <select class="input" id="setAutoSyncInterval">
+              <option value="0">关闭</option>
+              <option value="15">每 15 分钟</option>
+              <option value="30">每 30 分钟</option>
+              <option value="60">每 1 小时</option>
+              <option value="120">每 2 小时</option>
+              <option value="240">每 4 小时</option>
+            </select>
+          </div>
+          <div class="row">
+            <span class="row-label">同步时抓取全场名单</span>
+            <label class="switch"><input type="checkbox" id="setAutoDetail"><span class="slider"></span></label>
+          </div>
+          <div class="row">
+            <span class="row-label">战局列表翻页数</span>
+            <!-- 每档的场数是实测的阶梯：官方单页回 8 条，游标只前进 7 条 ⇒ 8 / 15 / 22 / 29 / 36。
+                 以前写的是 7/14/21/28/35（按 7 一档估的），跟「翻页记录」那一行念回来的数差一场，
+                 自证上线之后这两处必须说同一个数，所以照实测改。 -->
+            <select class="input" id="setSyncPages">
+              <option value="1">1 页（8 场）</option>
+              <option value="2">2 页（15 场）</option>
+              <option value="3">3 页（22 场）</option>
+              <option value="4">4 页（29 场）</option>
+              <option value="5">5 页（36 场，推荐）</option>
+            </select>
+          </div>
+          <div class="row">
+            <span class="row-label">翻页间隔</span>
+            <select class="input" id="setSyncPageDelay">
+              <option value="200">快速 200 ms</option>
+              <option value="500">标准 500 ms（推荐）</option>
+              <option value="1000">保守 1 s</option>
+              <option value="2000">最慢 2 s</option>
+            </select>
+          </div>
+          <div class="row">
+            <span class="row-label">官方赛季号</span>
+            <input class="input sm" type="text" id="setSeasonSid" inputmode="numeric" maxlength="4" placeholder="">
+          </div>
+          <p class="hint" id="setSeasonSidNote">这一枚只影响「官方赛季数据」那一格与分地图统计（那两发要带 sid 去问官方）。
+            <b>官方没有任何接口能查"当前是第几赛季"</b>（抓包核过的 12 个端点里都没有），所以软件猜不出来：
+            留空 = 用软件内置默认；换了赛季，那一格念的就还是旧赛季的总数 —— 到官方战绩页看一眼当前赛季号，填进来再同步一次就对了。
+            <b>战局列表与所有分析不受这一枚影响</b>（那个接口不带 sid）。</p>
+          <p class="hint">启动时不再自动同步：进入主界面后点「立即同步」即可，自动更新交给下面的定时同步。
+            <b>强烈建议开启定时同步。</b>官方分页最多翻 5 页 = 36 场（每一页只往前挪 7 场），
+            如果长时间不同步、打得又多，中间场次仍会永久采集不到。定时同步 + 5 页翻页 = 最稳。</p>
+          <p class="hint">全场名单用于「同局对比」「对手队友识别」「救治占全队比」等指标。
+            关闭后这些指标会退化为固定基准估算。</p>
+        </div>
+
+        <div class="panel">
+          <h3>地图名</h3>
+          <div class="row">
+            <span class="row-label">本机字典</span>
+            <span class="hint" id="mapNamesText" style="margin:0;flex:1;word-break:break-all">—</span>
+            <button class="btn" id="btnMapNamesRefresh">更新地图名</button>
+          </div>
+          <p class="hint">官方战绩接口只回地图编号，地名在另一份<b>公开</b>的配置表里。
+            打开软件时会自动取一次，<b>距上次成功取表超过一天才会再自动取</b> ——
+            平时不占网络，官方出新图最迟第二天就跟上；想立刻跟上就点这颗按钮。
+            取回来之后，原先认不出编号的历史场次会立刻按新地名重算显示。</p>
+          <p class="hint">这一发只带上软件自己：不带登录态、不带战绩、不带任何本机数据，
+            落到本机的也只有「编号 → 地名」这一份公开字典。你的战绩始终只保存在本机，不会上传任何服务器。</p>
+          <div class="row">
+            <span class="row-label">本机字典</span>
+            <span class="hint" style="margin:0;flex:1">每张图叫什么由这一份字典说了算，<b>改它不用出网</b>。</span>
+            <button class="btn" id="btnMapDict">查看 / 编辑</button>
+          </div>
+          <div id="mapDictBox" class="hidden"></div>
+        </div>
+
+        <div class="panel">
+          <h3>在线更新</h3>
+          <div class="row">
+            <span class="row-label">当前版本</span>
+            <span class="hint" style="margin:0" id="updVersion">—</span>
+          </div>
+          <div class="row">
+            <span class="row-label">状态</span>
+            <span class="hint" style="margin:0;flex:1" id="updStatus">正在检查…</span>
+            <button class="btn" id="btnUpdCheck">重新检查</button>
+            <button class="btn hidden" id="btnUpdDownload">打开下载地址</button>
+            <button class="btn hidden" id="btnUpdCopy">复制链接</button>
+          </div>
+          <p class="hint" id="updNote"></p>
+          <p class="hint">有新版本时本软件<b>不会自己下载安装</b>，只把下载地址给你：下载整包解压覆盖原来的目录就行。
+            <br><b>覆盖安装不会丢数据。</b>你的战绩、账号、字典与设置都不在安装目录里，
+            而在本机的数据目录（Windows 是 <code>%APPDATA%\df-swtwr</code>，安卓是应用的私有目录），
+            换程序目录动不到它。
+            <br>查版本那一发同时是<b>装机计数</b>：这台机器第一次会往那台服务器多带一个字
+            （<code>sec=启动软件</code>）让计数 +1，以后每次启动只问版本、不再计数。
+            这一发<b>不带账号、不带昵称、不带任何战绩</b>；你的数据始终只保存在本机。</p>
+        </div>
+
+        <div class="panel">
+          <h3>备份</h3>
+          <div class="row">
+            <span class="row-label">每日自动备份</span>
+            <label class="switch"><input type="checkbox" id="setAutoBackup"><span class="slider"></span></label>
+          </div>
+          <div class="row">
+            <span class="row-label">保留份数</span>
+            <select class="input" id="setBackupKeep">
+              <option value="3">最近 3 份</option>
+              <option value="7">最近 7 份</option>
+              <option value="14">最近 14 份</option>
+              <option value="30">最近 30 份</option>
+            </select>
+          </div>
+          <div class="row">
+            <span class="row-label">备份目录</span>
+            <span class="hint" id="backupDirText" style="margin:0;flex:1;word-break:break-all">—</span>
+            <button class="btn" id="btnChooseBackupDir">更改</button>
+            <button class="btn" id="btnOpenBackup">打开</button>
+            <button class="btn" id="btnBackupNow">立即备份</button>
+          </div>
+          <p class="hint" id="backupList">—</p>
+        </div>
+
+        <div class="panel">
+          <h3>账号</h3>
+          <div id="accountList" class="account-list"></div>
+          <div class="row">
+            <button class="btn btn-primary" id="btnAddAccountSetting">＋ 添加账号</button>
+            <button class="btn" id="btnLogoutCurrent">退出当前号登录</button>
+          </div>
+          <p class="hint">每个账号有独立的数据文件与登录分区，互不干扰。切换后所有页面数据、评分曲线与对手队友档案都会自动重算。
+            「移除」只删除本机数据文件与 cookie；Electron 的分区目录（Partitions/wegame-slot-xxx）需要手动清理，软件会提示路径。</p>
+        </div>
+
+        <div class="panel">
+          <h3>数据</h3>
+          <p class="hint" id="statsLine"></p>
+          <div class="row">
+            <button class="btn" id="btnExportJson">导出战绩 JSON</button>
+            <button class="btn" id="btnExportCsv">导出战绩 CSV</button>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary" id="btnBundle">导出完整数据包</button>
+            <button class="btn" id="btnRestore">导入数据包</button>
+            <button class="btn" id="btnOpenFolder">打开数据目录</button>
+            <button class="btn btn-danger" id="btnReset">清空数据</button>
+          </div>
+          <p class="hint">「完整数据包」包含全部战局、全场名单与赛季数据，可用于换电脑迁移。
+            导入时按房间号自动去重，不会覆盖已有数据。</p>
+          <p class="hint">合规说明：本软件只读取当前登录账号的战绩数据用于个人分析，不存储账号密码，
+            不导出登录凭据，数据仅保存在本机。</p>
+        </div>
+
+        <div class="panel">
+          <h3>扩展插件</h3>
+          <div class="plugin-list" id="pluginList"></div>
+          <div class="row">
+            <button class="btn btn-primary" id="btnPluginImport">导入插件包（.zip）</button>
+            <span class="hint" id="pluginHintLine" style="margin:0;flex:1">本机还没有导入过插件。</span>
+          </div>
+          <p class="hint"><b>本软件自带功能里没有任何上传、外发到第三方站点的能力</b>，也没有为某个站点写死的对接代码。
+            扩展插件由你自行从别处获取并导入，卸载即彻底消失（连同它在本机的存储与登录状态）。</p>
+          <p class="hint">导入时会把包申请的全部能力逐条列出来给你勾，<b>没勾中的那项主进程直接拒绝</b>，插件页面里改代码也没用；
+            插件能读到的战绩只有去敏后的聚合值（胜率、场次、评分这类），房间号、队友对手昵称、身份标识都在结构上给不出去。
+            插件包被改动过哪怕一个字节，宿主会拒绝再为它提供任何能力。</p>
+          <p class="hint">插件页面运行在沙箱框架里，只能看到自己那份资源，读不到本机文件、其它页面和登录分区。
+            随时可以在上面禁用或卸载。</p>
+        </div>
+      </section>
+
+      <!-- 插件页面宿主：内容全部来自用户导入的插件，本软件不预设任何页面 -->
+      <section class="view view-full" id="view-plugin">
+        <header class="view-head">
+          <h2 id="pluginPageTitle">扩展页面</h2>
+          <span class="view-sub">由你导入的插件提供 · 运行在沙箱中，能力以导入时勾选的为准</span>
+          <select class="input" id="pluginPagePick" style="max-width:220px"></select>
+          <button class="btn btn-sm" id="btnPluginPageReload">重新加载</button>
+        </header>
+        <!-- ★ 外发确认面板：只在「当前插件带 net.request 且清单里写了 consent.sentence」时出现。
+             判定在主进程（plugin:consent），这里只负责把手打的原文递过去 —— 插件自己页面上的确认框不算数。
+             版式用的是宿主自己的一套（app.css 的 .gate-*），与插件页里的 .pl-cols/.pl-list 同族同断点。
+             ★ 已允许之后整块默认收成顶部那一行：它原先固定占掉插件页近一半高度，把插件自己的功能全挤下去。
+               但「撤销允许」必须留在那一行上 —— 收起来就找不到撤销，那等于把闸门藏了；判定始终在主进程。 -->
+        <div class="panel" id="pluginConsent" style="display:none">
+          <div class="gate-bar">
+            <h3 id="pluginConsentWho">这个插件要往外发数据</h3>
+            <span class="gate-state" id="pluginConsentState"></span>
+            <button class="btn btn-sm" id="btnPluginGateToggle">展开</button>
+            <button class="btn btn-sm btn-danger" id="btnPluginConsentRevoke" style="display:none">撤销允许</button>
+          </div>
+          <div id="pluginConsentBody">
+            <div class="gate-cols">
+              <div><h4>会发出去</h4><ul class="gate-list" id="pluginConsentSends"></ul></div>
+              <div><h4>不会发出去</h4><ul class="gate-list no" id="pluginConsentNo"></ul></div>
+            </div>
+            <div class="gate-need">要允许它向外发送，请在下面的输入框里<b>逐字输入</b>这句话（不给复制，就是为了让你读一遍）：</div>
+            <div class="gate-text" id="pluginConsentText"></div>
+            <div class="row">
+              <input class="input" id="pluginConsentInput" type="text" autocomplete="off" spellcheck="false" style="flex:1;min-width:0">
+              <button class="btn btn-primary" id="btnPluginConsent">输入正确即允许</button>
+            </div>
+            <p class="hint" id="pluginConsentNote" style="margin:0"></p>
+            <p class="gate-hosts" id="pluginConsentHosts" style="margin:0"></p>
+          </div>
+        </div>
+        <div class="plugin-frame-wrap">
+          <iframe id="pluginFrame" class="plugin-frame" sandbox="allow-scripts" title="插件页面"></iframe>
+          <div class="panel" id="pluginPageEmpty" style="display:none">
+            <h3>没有可显示的插件页面</h3>
+            <p class="hint">请到「设置 → 扩展插件」导入插件包，勾选它需要的能力并启用。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 地图沙盘（内嵌第三方兵棋推演工具） -->
+      <section class="view view-full" id="view-sandbox">
+        <header class="view-head">
+          <h2>地图沙盘</h2>
+          <span class="view-sub">内嵌第三方工具 aeuicey.github.io/DeltaForce-TacticalPanel，需要联网</span>
+          <button class="btn btn-sm" id="btnSandboxReload">重新加载</button>
+        </header>
+        <div class="sandbox-wrap">
+          <webview id="sandboxView" class="sandbox-frame"></webview>
+          <div class="sandbox-fallback" id="sandboxFallback" style="display:none">
+            <h3>地图沙盘没能加载</h3>
+            <p class="hint">这个页面是内嵌的第三方站点，需要联网才能打开。请检查网络后重试，或直接在浏览器里访问。</p>
+            <div class="row">
+              <button class="btn btn-primary" id="btnSandboxRetry">重试</button>
+              <button class="btn" id="btnSandboxBrowser">在浏览器中打开</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI 深度分析这一页已经不在出厂包里：它成了一份由用户自己导入的插件（看 plugins-src/ai-analyst）。
+      ★ 这里刻意不留占位入口，也不留任何 ai-* 样式钩子。 -->
+      <!-- 关于 -->
+      <section class="view" id="view-about">
+        <header class="view-head">
+          <h2>关于</h2>
+          <span class="view-sub" id="aboutVersion">三角洲 · 全面战场数据分析</span>
+        </header>
+        <div class="panel about-panel">
+          <div class="about-name">三角洲 · 全面战场数据分析</div>
+          <div class="about-badges">
+            <span class="tag tag-soft">免费开源</span>
+            <span class="tag tag-muted">严禁倒卖</span>
+            <span class="tag tag-muted">本地存储</span>
+          </div>
+          <p class="hint">本软件免费开源，所有战绩只保存在你自己的电脑上。
+            任何人不得将本软件或其修改版用于收费、倒卖、捆绑推广；如发现付费版本即为假冒。</p>
+          <div class="about-row">
+            <span class="about-label">项目地址</span>
+            <span class="about-value">github.com/3603893291</span>
+            <button class="btn btn-sm" id="btnGithub">打开 GitHub 主页</button>
+          </div>
+          <div class="about-row">
+            <span class="about-label">交流 QQ 群</span>
+            <span class="about-value" id="qqGroup">129994517</span>
+            <button class="btn btn-sm" id="btnCopyGroup">复制群号</button>
+          </div>
+          <p class="hint">反馈问题、提需求或者催更都可以进群。反馈时请附上「设置 → 打开数据目录」里的版本号，
+            便于定位问题。</p>
+        </div>
+        <div class="panel">
+          <h3>数据与合规</h3>
+          <p class="hint">只调用 WeGame 官方战绩接口读取当前登录账号自己的对局数据，不存储账号密码、不导出登录凭据，
+            也没有任何上传行为。卸载即删除整个程序目录，不会留下残留。</p>
+          <p class="hint">另有且仅有一处<b>读取</b>：官方战绩接口只回地图编号，地名在另一份公开的配置表里，
+            为了认识官方新出的地图，软件会去取那一份表 —— 首次打开自动取一次，之后由你在「设置 → 地图名」里自己点。
+            这一发不带登录态、不带战绩、不带任何本机数据，落回本机的也只有「编号 → 地名」这一份公开字典。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- 通用确认对话框：Electron 渲染进程不支持 window.confirm -->
+<div id="confirmDlg" class="dlg-mask" style="display:none">
+  <div class="dlg">
+    <h3 id="confirmTitle">请确认</h3>
+    <div id="confirmMsg" class="dlg-body"></div>
+    <div id="confirmChoices" class="dlg-choices"></div>
+    <div class="dlg-actions">
+      <button id="confirmCancel" class="btn">取消</button>
+      <button id="confirmOk" class="btn btn-primary">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 插件导入权限确认：包申请的每一项能力都要单独勾，全勾完才允许确认导入 -->
+<div id="pluginDlg" class="dlg-mask" style="display:none">
+  <div class="dlg dlg-wide">
+    <h3 id="pluginDlgTitle">确认插件权限</h3>
+    <div class="dlg-body" id="pluginDlgWho"></div>
+    <div class="perm-list" id="pluginDlgPerms"></div>
+    <div class="dlg-meta" id="pluginDlgMeta"></div>
+    <div class="dlg-actions">
+      <button id="pluginDlgCancel" class="btn">取消</button>
+      <button id="pluginDlgOk" class="btn btn-primary" disabled>确认导入</button>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/views.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

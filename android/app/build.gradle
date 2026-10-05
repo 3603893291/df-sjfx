@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.df.battleanalyzer'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.df.battleanalyzer'
+        minSdk 24
+        targetSdk 36
+        /* versionCode 只能往上走：系统拒绝降级安装，不抬号他就没法"直接装上去"覆盖手机上那一份。
+         * 关于页读的就是这个 versionName，装完先进「关于」看一眼就知道装的是哪一版。 */
+        versionCode 19
+        versionName '0.19-android'
+    }
+
+    // DfBridge 要在「关于」里报出自己的版本；AGP 8 默认不再产 BuildConfig，这里显式开
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // 源码里有中文提示，编译编码必须钉死 UTF-8（Windows 上默认会走 GBK）
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    // 产物直接命名成 df-<versionName>.apk，方便拷到手机上装
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = 'df-' + variant.versionName + '.apk'
+        }
+    }
+}
+
+// ★ 零第三方依赖：不用 AndroidX、不用 OkHttp，只用 android.jar + HttpURLConnection。
+//   与桌面端 package.json 的 dependencies:{} 是同一条规矩。
+dependencies {
+}

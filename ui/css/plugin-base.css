@@ -1,0 +1,235 @@
+/* plugin-base.css — 宿主注入给插件页的唯一版式词汇表
+ *
+ * 为什么要有这份文件：插件页跑在 `<iframe sandbox="allow-scripts">` 里（刻意不给
+ * allow-same-origin），宿主自己的 app.css 它一行都读不到。没有词汇表的时候每个插件
+ * 只能自己手搓版式，搓出来的东西既不像本软件，也很容易把「逐字确认」这种关键块
+ * 摆到页面中间去（v1.5.0 的战队页就是这个样子）。
+ *
+ * 所以：颜色一律走 --token（宿主在生成 srcdoc 时把当前主题的实测值写进 iframe 的 :root），
+ * 组件一律用 .pl-* 前缀。这份文件同时被宿主自己的「扩展插件」页顶部面板使用（app.css 里
+ * 只补一条宿主容器的外层规则），两边同源，不会出现「插件页长得跟宿主不一样」。
+ *
+ * ⚠️ 这是写给第三方插件作者的公开契约，改名等于毁包 —— 只增不删。
+ */
+
+/* ---------- 基础 ---------- */
+html { color-scheme: light dark; }
+body {
+  margin: 0;
+  padding: 16px 18px 28px;
+  font: 13.5px/1.7 var(--font, -apple-system, "SF Pro Text", "Segoe UI", "Microsoft YaHei", sans-serif);
+  color: var(--text, #1D1D1F);
+  background: var(--bg, #FBFBFD);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+p { margin: 8px 0; }
+a { color: var(--accent, #0071E3); }
+b, strong { font-weight: 600; }
+code {
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px;
+  background: var(--surface-2, #F5F5F7); border-radius: 4px; padding: 1px 5px;
+}
+
+/* ---------- 标题区 ---------- */
+.pl-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.pl-title { font-size: 15.5px; }
+.pl-sub { font-size: 12.5px; color: var(--text-2, #6E6E73); }
+.pl-sec { margin: 22px 0 8px; font-size: 13.5px; }
+
+/* ---------- 卡片 ---------- */
+.pl-card {
+  margin: 10px 0; padding: 13px 15px;
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--border, rgba(0,0,0,.08));
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow, 0 2px 12px rgba(0,0,0,.06));
+}
+.pl-card > :first-child { margin-top: 0; }
+.pl-card > :last-child { margin-bottom: 0; }
+/* 会真的影响别人的事，用这条橙边隔开写，别混在普通说明里 */
+.pl-warn {
+  border-left: 3px solid var(--orange, #FF9500);
+  background: var(--surface-2, #F5F5F7);
+  padding-left: 12px;
+}
+
+/* ---------- 表单行 ---------- */
+.pl-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; flex-wrap: wrap; }
+.pl-lbl { flex: 0 0 96px; font-size: 12.5px; color: var(--text-2, #6E6E73); }
+.pl-input, .pl-btn { font: inherit; color: inherit; }
+input, select, textarea {
+  font: inherit; color: var(--text, #1D1D1F);
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--separator, #D2D2D7);
+  border-radius: var(--radius-sm, 8px);
+  padding: 5px 9px; min-width: 0;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible, .pl-btn:focus-visible {
+  outline: 2px solid var(--accent, #0071E3); outline-offset: 1px;
+}
+.pl-input, input:not([type=checkbox]), select { flex: 1; }
+textarea { width: 100%; box-sizing: border-box; }
+
+/* ---------- 按钮 ---------- */
+.pl-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+.pl-btn {
+  display: inline-block; cursor: pointer;
+  padding: 5px 12px; border-radius: var(--radius-sm, 8px);
+  background: var(--surface-2, #F5F5F7);
+  border: 1px solid var(--separator, #D2D2D7);
+}
+.pl-btn:hover { background: var(--surface-3, #EDEDF0); }
+.pl-btn.primary {
+  background: var(--accent, #0071E3); color: var(--accent-text, #FFFFFF);
+  border-color: transparent;
+}
+.pl-btn.danger { color: var(--red, #FF3B30); }
+.pl-btn:disabled { opacity: .45; cursor: default; }
+.pl-btn.sm { padding: 3px 9px; font-size: 12px; }
+
+/* ---------- 一行行的指标块 ---------- */
+.pl-cards { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 12px 0 4px; }
+.pl-stat { min-width: 92px; }
+.pl-stat b { display: block; font-size: 17px; font-weight: 600; }
+.pl-stat i { font-style: normal; font-size: 11.5px; color: var(--text-3, #86868B); }
+
+/* ---------- 披露两栏：会发出去 / 不会发出去 ---------- */
+.pl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 12px 0 6px; }
+.pl-cols h4 { margin: 0 0 4px; font-size: 13px; color: var(--text-2, #6E6E73); }
+.pl-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.95; color: var(--text-2, #6E6E73); }
+.pl-list li { margin: 2px 0; }
+.pl-list li::marker { color: var(--orange, #FF9500); }
+.pl-list.no li::marker { color: var(--red, #FF3B30); }
+
+/* ---------- 逐字确认 ---------- */
+.pl-need { margin: 14px 0 8px; font-size: 13px; }
+/* 这句话不可选中 —— 它存在的意义就是让人自己敲一遍 */
+.pl-consent-text {
+  margin: 8px 0 10px; padding: 13px 16px; text-align: center;
+  font-size: 14px; font-weight: 600; letter-spacing: .3px;
+  color: var(--text, #1D1D1F); background: var(--surface-2, #F5F5F7);
+  border: 1px dashed var(--separator, #D2D2D7);
+  border-radius: var(--radius-sm, 8px);
+  user-select: none; -webkit-user-select: none;
+}
+
+/* ---------- 长文本 / 状态 ---------- */
+.pl-pre {
+  margin: 10px 0 4px; padding: 12px 14px; max-height: 300px; overflow: auto;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11.5px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+  color: var(--text-2, #6E6E73); background: var(--surface-2, #F5F5F7);
+  border: 1px solid var(--border, rgba(0,0,0,.08));
+  border-radius: var(--radius-sm, 8px);
+}
+.pl-note { font-size: 12.5px; color: var(--text-2, #6E6E73); }
+.pl-err { color: var(--red, #FF3B30); }
+.pl-ok { color: var(--green, #34C759); }
+.pl-empty { margin: 26px 0; text-align: center; font-size: 13px; color: var(--text-3, #86868B); }
+/* v1.5.0 的注入样式里有这两个类，插件包已经在用 —— 只增不删，留成别名 */
+.dim { opacity: .62; }
+.err { color: var(--red, #FF3B30); }
+.ok { color: var(--green, #34C759); }
+
+/* ---------- 表格：宽表只能套 .pl-scroll，不许裸 table 撑父容器 ---------- */
+.pl-scroll { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th, td {
+  padding: 6px 9px; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--border, rgba(0,0,0,.08));
+}
+th { color: var(--text-2, #6E6E73); font-weight: 600; white-space: nowrap; }
+td.k, .pl-k { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+.pl-kv { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 6px 0; font-size: 12.5px; }
+.pl-kv > div { flex: 0 0 auto; }
+.pl-kv b { font-weight: 600; }
+
+/* ---------- 分段选择（二选一这类切换，别用一排裸按钮） ---------- */
+.pl-seg {
+  display: inline-flex; overflow: hidden; flex: 0 0 auto;
+  border: 1px solid var(--separator, #D2D2D7); border-radius: var(--radius-sm, 8px);
+}
+.pl-seg button {
+  font: inherit; color: var(--text-2, #6E6E73); cursor: pointer;
+  padding: 5px 12px; border: 0; border-radius: 0; background: var(--surface, #FFFFFF);
+}
+.pl-seg button + button { border-left: 1px solid var(--separator, #D2D2D7); }
+.pl-seg button.on { background: var(--accent, #0071E3); color: var(--accent-text, #FFFFFF); }
+
+/* ---------- 开关 ----------
+ * 用真 checkbox + accent-color，不手搓滑块：沙箱里少一个伪元素，就少一个
+ * "窄屏下看起来对、点下去没反应"的机会。 */
+.pl-switch { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-2, #6E6E73); cursor: pointer; }
+.pl-switch input { flex: 0 0 auto; width: 17px; height: 17px; accent-color: var(--accent, #0071E3); }
+
+/* ---------- 代号 / 标签 / 历史行 ---------- */
+.pl-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 2px; }
+.pl-tag {
+  display: inline-block; padding: 2px 9px; font-size: 11.5px; border-radius: 999px;
+  color: var(--text-2, #6E6E73); background: var(--surface-2, #F5F5F7);
+  border: 1px solid var(--border, rgba(0,0,0,.08));
+}
+.pl-tag.mute { opacity: .72; }
+.pl-hist {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 9px 6px; border-top: 1px solid var(--border, rgba(0,0,0,.08));
+  font-size: 12.5px; color: var(--text-2, #6E6E73); cursor: pointer;
+}
+.pl-hist:hover { background: var(--surface-2, #F5F5F7); }
+.pl-hist.on { background: var(--accent-soft, rgba(0,113,227,.10)); }
+.pl-hist-k { flex: 0 0 auto; font-weight: 600; color: var(--text, #1D1D1F); }
+.pl-hist-t { flex: 1 1 200px; }
+.pl-hist-x { flex: 0 0 auto; font-size: 11.5px; color: var(--text-3, #86868B); }
+
+/* ---------- 模型回答的正文排版（Markdown 渲染结果的容器） ---------- */
+.pl-answer { font-size: 13.5px; line-height: 1.9; color: var(--text, #1D1D1F); word-break: break-word; }
+.pl-answer h3 { margin: 16px 0 6px; font-size: 14.5px; }
+.pl-answer h4 { margin: 14px 0 5px; font-size: 13.5px; color: var(--text-2, #6E6E73); }
+.pl-answer p { margin: 8px 0; }
+.pl-answer ul, .pl-answer ol { margin: 8px 0; padding-left: 22px; }
+.pl-answer li { margin: 3px 0; }
+.pl-answer blockquote {
+  margin: 10px 0; padding: 8px 12px; color: var(--text-2, #6E6E73);
+  background: var(--surface-2, #F5F5F7); border-left: 3px solid var(--separator, #D2D2D7);
+  border-radius: 0 var(--radius-sm, 8px) var(--radius-sm, 8px) 0;
+}
+.pl-answer hr { border: 0; border-top: 1px solid var(--border, rgba(0,0,0,.08)); margin: 14px 0; }
+.pl-answer table { margin: 10px 0; }
+.pl-answer .md-code {
+  margin: 10px 0; padding: 10px 12px; overflow-x: auto;
+  background: var(--surface-2, #F5F5F7); border: 1px solid var(--border, rgba(0,0,0,.08));
+  border-radius: var(--radius-sm, 8px);
+}
+.pl-answer .md-code code { background: none; padding: 0; }
+/* 流式进行中的光标：让人一眼看出"还在吐字"，不是卡住 */
+.pl-caret {
+  display: inline-block; width: 7px; height: 15px; vertical-align: -2px;
+  background: var(--accent, #0071E3); animation: pl-blink 1s steps(2, start) infinite;
+}
+@keyframes pl-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* ---------- 骨架屏：等待时给一块灰，比空白更像"在跑" ---------- */
+.pl-skeleton {
+  min-height: 96px; border-radius: var(--radius-sm, 8px);
+  background: linear-gradient(90deg, var(--surface-2, #F5F5F7) 25%, var(--surface-3, #EDEDF0) 37%, var(--surface-2, #F5F5F7) 63%);
+  background-size: 400% 100%; animation: pl-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes pl-shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+/* ---------- 窄屏（竖屏移动端按这一档长） ---------- */
+@media (max-width: 720px) {
+  body { padding: 12px 12px 24px; font-size: 13px; }
+  .pl-cols { grid-template-columns: 1fr; gap: 12px; }
+  /* 标签挪到控件上方，不让它把输入框挤成一条缝 */
+  .pl-row { align-items: stretch; }
+  .pl-lbl { flex: 1 0 100%; }
+  .pl-btn, input:not([type=checkbox]), select { min-height: 40px; }
+  .pl-btns .pl-btn { flex: 1 1 auto; }
+  .pl-consent-text { font-size: 13px; padding: 11px 12px; }
+  /* 分段控件在窄屏里满宽平铺，两个标签不再挤成半格 */
+  .pl-seg { display: flex; width: 100%; }
+  .pl-seg button { flex: 1 1 0; min-height: 40px; }
+  .pl-switch { min-height: 40px; }
+  .pl-answer { font-size: 13px; line-height: 1.8; }
+}
