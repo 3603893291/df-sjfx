@@ -369,11 +369,16 @@ function mapNamesSet(id, name) {
     const hasData = mainStore.state && mainStore.state.matches &&
       Object.keys(mainStore.state.matches).length;
     if (!hasData) {
-      if (realData && fs.existsSync(realData)) {
-        mainStore.state = Object.assign(mainStore.state, JSON.parse(fs.readFileSync(realData, 'utf8')));
+      const raw = (realData && fs.existsSync(realData))
+        ? JSON.parse(fs.readFileSync(realData, 'utf8'))
+        : JSON.parse(fs.readFileSync(SAMPLE, 'utf8'));
+      /* ★ DF_PREVIEW_DATA 认两种形状：store 导出的（有 matches/meta，整份搬进 state）
+       *   与抓包样本那种（role/season/list/maps/details —— 必须走 ingest 才会拆成场次与名单）。
+       *   原来这里只认第一种，喂成抓包样本形状时会静默播种出 0 场，界面整个是空的还不报错。 */
+      if (raw.matches || raw.meta) {
+        mainStore.state = Object.assign(mainStore.state, raw);
         await mainStore.save();
       } else {
-        const raw = JSON.parse(fs.readFileSync(SAMPLE, 'utf8'));
         await mainStore.ingest({
           at: Date.now(), role: raw.role, season: raw.season,
           list: raw.list, maps: raw.maps, details: raw.details

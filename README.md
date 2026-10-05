@@ -5,25 +5,39 @@ Windows 桌面软件。**软件内置浏览器，登录 WeGame 后**自动采集
 
 ---
 
-## 这个仓库里有什么、没有什么
+## 这个仓库
 
-**有**：桌面版与安卓版的全部源码 —— `core/`（纯 JS 判定内核，零依赖）、`ui/`（界面）、`shell/`（Electron 主进程与适配器）、
-`android/`（安卓壳的 Java 与 js）、`test/`（回归与探针）、`tools/`（构建与复验脚本）。
+这是**纯客户端源码**：`core/`（判定内核，纯 JS 零依赖）、`ui/`（界面）、`shell/`（Electron 主进程与适配器）、`android/`（安卓壳）、
+`test/`（回归与探针）、`tools/`（构建与复验脚本）。装上就能跑，跑起来只在你自己这台机器上工作。
 
-**没有**（都是故意的）：
-
-| 不在仓库里的东西 | 为什么 |
-|---|---|
-| **你的任何游戏数据** | 战绩、名单、账号资料都存在**本机**用户目录（Windows 是 `%APPDATA%\df-swtwr\df-swtwr-<槽位>.json`，安卓是应用私有目录），一个账号一份文件，**软件不往任何服务器上传战绩**。仓库里没有这些数据，也不可能有 —— 克隆下来跑不起来你的号 |
-| **插件包源码**（`plugins-src/`、`plugins-dist/`） | 插件是由使用者自己导入的可选件（战队战绩同步、AI 深度分析、示例包），不在出厂包里，也不在这个仓库里。插件**宿主**与沙箱红线在 `core/` + `ui/` 里，这部分是公开的。⇒ 少了这几个目录，`npm test` 那八套里有四套跑不起来，用 `npm run test:no-plugins` 跑其余四套（内核 659 项 + 插件桥 70 项 + 地图名 86 项 + 在线更新 56 项，全绿不依赖任何外部目录） |
-| **服务端**（`server/`） | 在线更新查询、发布页、后台与建表 SQL 都只在作者自己的服务器上，不上公开仓库。公开的是**客户端那一侧**：`core/update.js` 怎么问版本、问到之后界面怎么念、以及"这台机器第一次启动"那枚计数标记 —— 对着 `test/update.test.js` 就能看完整套口径。凭证类文件（数据库口令、发布页口令的 `password_hash` 结果）在任何仓库、任何分享包里都不许出现 |
-| **成品整包**（`dist/`、`dist-android/`、`release/`） | 那是构建产物。要装软件请从作者发布的下载地址拿，不要自己拼一半文件（绿色版必须整目录完整） |
-| **作者的交接手册 / 插件开发指南** | 内部工作文档，含发布与运维细节，不随源码公开 |
+**你的战绩不会离开你的电脑。** 场次、名单、账号资料全部写在本机用户目录，一个账号一份文件，不上传任何服务器。
+软件自己主动出网只有两处：① 启动时问一次「有没有新版本」（只问版本号，不代下载、不动安装目录）；
+② 你开启自动同步后，按你设的间隔去**官方战绩接口**拉你自己的战局 —— 那是你与官方之间，带着你自己的登录态，不经过任何第三方。
+公开地图名对照表要你在设置里点「更新」才拉；插件要外发必须单独授权，每次都会先把它要发的内容摊给你看。
+克隆这份代码拿不到任何人的数据 —— 数据从来不在代码里。
 
 **许可**：Apache-2.0（见 `LICENSE`）。
 **免责**：本工具是**第三方非官方**的本机战绩分析软件，与腾讯、WeGame、《三角洲行动》官方无任何关联；
 它只读官方公开的战绩接口、只把结果写在你自己的机器上。请勿用于任何刷量、自动化操作或违反游戏用户协议的行为；
 官方接口随时可能变动，接口一改本工具的采集就可能失效（分析部分仍可用本机已有数据）。
+
+---
+
+## 界面
+
+下面这些截图跑的是**脱敏样本**：人名换成「选手001」这种、ID 换成合成号，统计数字与时间没动过 —— 图里没有任何真人的战绩。
+
+| 启动 · 登录 WeGame | 总览 |
+|---|---|
+| ![登录](docs/screenshots/login.png) | ![总览](docs/screenshots/overview.png) |
+| **胜率** | **战局列表** |
+| ![胜率](docs/screenshots/winrate.png) | ![战局列表](docs/screenshots/matches.png) |
+| **单场详情** | **地图分析** |
+| ![单场详情](docs/screenshots/detail.png) | ![地图分析](docs/screenshots/maps.png) |
+| **兵种表现** | **对手队友** |
+| ![兵种表现](docs/screenshots/classes.png) | ![对手队友](docs/screenshots/encounters.png) |
+| **状态与节律** | **设置** |
+| ![状态与节律](docs/screenshots/rhythm.png) | ![设置](docs/screenshots/settings.png) |
 
 ---
 
@@ -139,7 +153,7 @@ Windows 桌面软件。**软件内置浏览器，登录 WeGame 后**自动采集
 
 ### AI 深度分析（v1.7.0 起不再是内置功能）
 
-原来内置的那一页已经整体搬进**由使用者自己导入的插件包**（源码 `plugins-src/ai-analyst`，包 id `df.ai.analyst`）。
+原来内置的那一页已经整体搬进**由使用者自己导入的插件包**（包 id `df.ai.analyst`）。
 本软件自带功能里不再有任何发往第三方大模型的能力：侧栏 12 个视图与设置页都没有它的入口，
 `df.ai` 桥、`shell/adapters/ai.js`、`ui/js/aiMarkdown.js` 也一并从出厂树里删掉 ——
 `test/isolation.test.js` 与 `--selftest` 两头都钉着这条（服务商品牌、协议记号、那句确认、那颗导航，都不许留在出厂树与界面里）。
@@ -206,12 +220,11 @@ Windows 桌面软件。**软件内置浏览器，登录 WeGame 后**自动采集
   并用真实排版引擎量到 360px 宽不破版（`tools/probe-plugin-layout.js`）。
 - 卸载会把插件文件、它的配置和它的登录状态一起删掉；撤销确认 / 停用 / 卸载都会立刻掐断该插件正在跑的流。
 
-参照实现与文档：`插件开发指南.md`、`plugins-src/demo-summary/`（不联网的最小例子）、
-`plugins-src/team-stats/`（战队战绩同步：登录 → 拼 20 项 → 先看会发什么 → 上传 → 读回核对）、
-`plugins-src/ai-analyst/`（★ 联网 + 流式 + 摘要 + 旧数据搬迁的完整例子）。
-★ 上面这三份参照实现和 `插件开发指南.md` 都**不在本仓库里**（插件不在开源范围内）；这里公开的是**宿主侧** ——
-`core/plugin.js`（能力派发与闸门）、`ui/` 里的插件页与确认面板、`tools/pack-plugin.js`（把插件目录打成可导入的 .zip）、
-`tools/probe-plugin-layout.js`（窄屏排版探针）。
+这份代码里公开的是**插件宿主**本身：`core/plugin.js`（清单解析、scope 白名单、权限指纹逐字比对）、
+`shell/plugins.js`（解包、启用/停用/卸载、确认闸门、会话 Cookie 落盘）、`shell/plugin-api.js`（能力派发白名单）、
+`shell/adapters/plugin-net.js`（插件唯一的外发出口，结构上带不了 cookie）、`ui/css/plugin-base.css`（注入沙箱的共享版式词表），
+以及 `tools/pack-plugin.js`（把一个插件目录打成可导入的 .zip）与 `tools/probe-plugin-layout.js`（窄屏排版探针）。
+怎么写一份插件、它能申请哪些能力、宿主会怎么拦，都能从这些文件与下面的回归测试读出来。
 回归测试四份：`test/plugin-bridge.test.js`（能力派发与网络出口）、`test/team-stats-plugin.test.js`（20 项口径 + 照文档写的模拟站点）、
 `test/ai-plugin.test.js`（真插件正文 + 本地假服务商跑通闸门、摘要、流式与渲染白名单）、
 `test/isolation.test.js`（**交付物里不含任何站点专用记号**，打包后会连 `dist/**/resources/app` 一起扫）。
@@ -334,10 +347,6 @@ df-swtwr/
 │       ├── net.js        网络适配器（走登录 session，自带 cookie，只给官方接口）
 │       ├── plugin-net.js ★ 插件外发出口（node:https，结构上带不了 cookie；三窗口超时 + 中止）
 │       └── store-node.js 存储适配器（文件）
-├── plugins-src/          ★ 插件包源码（不参与打包，用户自行打包导入）
-│   ├── demo-summary/     不联网的最小参照实现
-│   ├── team-stats/       战队战绩同步（登录 → 拼 20 项 → 先看会发什么 → 上传 → 读回核对）
-│   └── ai-analyst/       ★ AI 深度分析（v1.7.0 起 AI 只有这一种存在方式）
 ├── ui/                   界面（Apple 风格，纯 HTML/CSS/JS）
 │   ├── index.html        12 个侧栏页：总览/胜率/战局/单场详情/地图分析/兵种/对手队友/状态与节律/地图沙盘/设置/关于（+ 导入插件后才出现的「扩展页面」）
 │   ├── css/theme.css     设计令牌 + 明暗主题
@@ -356,7 +365,7 @@ df-swtwr/
 │   ├── preview-server.js 界面预览服务（免 Electron；两个 slot 演示切换；插件宿主与真闸门走真代码）
 │   └── mock-df.js        预览用 API 模拟（含 df.accounts.* / df.setFlag + 插件事件泵）
 ├── tools/
-│   ├── pack-plugin.js    把 plugins-src 下的目录打成 .zip
+│   ├── pack-plugin.js    把一个插件目录打成可导入的 .zip
 │   ├── probe-plugin-layout.js ★ 窄屏排版探针（真实排版引擎量 360/390/720/900）
 │   └── run-selftest.js   交付包自检（导航数、AI 痕迹、插件目录、登录探针）
 ├── build.js              打包绿色版
@@ -398,8 +407,7 @@ ai-reports-legacy.json            ★ 搬迁时从 store 的 aiReports 里腾出
 ```bash
 # 全套回归（八套，无需 Electron；内核 + 插件桥 + 战队插件 + AI 插件 + 隔离性 + 地图名 + 在线更新 + 安卓桥）
 npm test
-# ★ 本仓库不含 plugins-src/ 与 plugins-dist/，上面这条会有四套读不到插件目录而失败。
-#   没有那几个目录时跑这条（四套、共 871 项，全绿且自成一体）：
+# 这份仓库自带的四套（内核 659 项 + 插件桥 70 项 + 地图名 86 项 + 在线更新 56 项 = 871 项，全部自带夹具、不碰任何外部目录）：
 npm run test:no-plugins
 
 # 只跑内核（1~25 节）
@@ -411,12 +419,10 @@ node test/ai-leak-scan.js
 # 界面预览（浏览器打开 http://127.0.0.1:8770；插件宿主与外发闸门走真代码）
 node test/preview-server.js
 
-# 把 plugins-src 下的插件目录打成可导入的 .zip（产物落在 plugins-dist/）
-# ★ 下面这两条与上一条注释里那四套测试一样，要 plugins-src/ 才跑得动 —— 那个目录不在本仓库（见文首「这个仓库里有什么、没有什么」）
-node tools/pack-plugin.js ai-analyst
-node tools/pack-plugin.js team-stats
-# 这两份清单写的是 hosts:["*"]——服务商/站点地址由使用者在插件页里自己填，出包不必给 --host。
-# 只有作者要把域名固定死、不给使用者选时，才写 node tools/pack-plugin.js <目录> --host=域名1,域名2
+# 把你自己的插件目录打成可导入的 .zip（产物落在同级的输出目录）
+node tools/pack-plugin.js <插件目录名>
+# 清单里 hosts:["*"] 的意思是——服务商/站点地址由使用者在插件页里自己填，出包不必给 --host。
+# 只有要把域名固定死、不给使用者选时，才写 node tools/pack-plugin.js <目录> --host=域名1,域名2
 
 # 窄屏排版探针（真实排版引擎量 360 / 390 / 720 / 900 五份插件页面）
 node tools/probe-plugin-layout.js
